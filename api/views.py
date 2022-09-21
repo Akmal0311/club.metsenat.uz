@@ -1,10 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator
 from .serializer import *
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
-from django.db.models import Count, Sum
+from django.db.models import Count
 
 
 class SponsorView(generics.CreateAPIView):
@@ -21,30 +20,6 @@ class SponsorListView(generics.ListAPIView):
     queryset = Sponsor.objects.all()
     serializer_class = SponsorSerializer
 
-    def get(self, request, page):
-
-        sponsors = Sponsor.objects.all().values('id', 'fish', 'phone_number', 'payment', 'spent_amount', 'date', 'statuss')
-
-        paginator = Paginator(sponsors, 10)
-
-        data = paginator.page(page)
-
-        return Response(data=data.object_list, status=status.HTTP_200_OK)
-
-    def post(self, request, page):
-
-        data = request.data
-
-        sponsors = Sponsor.objects.filter(payment=data['payment']).values()
-
-        sponsor_serializer = self.serializer_class(instance=sponsors, many=True)
-
-        paginator = Paginator(sponsor_serializer.data, 10)
-
-        res = paginator.page(page)
-
-        return Response(data=res.object_list, status=status.HTTP_200_OK)
-
 
 class StudentView(generics.CreateAPIView):
     queryset = Student.objects.all()
@@ -54,28 +29,6 @@ class StudentView(generics.CreateAPIView):
 class StudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-
-    def get(self, request, page):
-        students = Student.objects.all().values('id', 'fish', 'student_type', 'otm', 'allocated_amount', 'contract_amount')
-
-        paginator = Paginator(students, 10)
-
-        data = paginator.page(page)
-
-        return Response(data=data.object_list, status=status.HTTP_200_OK)
-
-    def post(self, request, page):
-        data = request.data
-
-        students = Student.objects.filter(student_type=data['student_type']).values()
-
-        student_serializer = self.serializer_class(instance=students, many=True)
-
-        paginator = Paginator(student_serializer.data, 10)
-
-        res = paginator.page(page)
-
-        return Response(data=res.object_list, status=status.HTTP_200_OK)
 
 
 class StudentDetailView(APIView):
@@ -177,7 +130,6 @@ class SponsorPayForStudentView(generics.CreateAPIView):
             if a.student.id == student_id and a.sponsor.id == data['sponsor']:
                 return Response(data={'error': 'Sponsor bu talabaga oldin pul otkazgan. eltimos sponsor tahrirlash dan summani qo`shing'})
 
-
         if sponsor.payment < amount:
             return Response(data={'error': 'Sponsor hisobida yetarli pul mavjud emas!   Sponsor hisobi: {} UZS   To`lanayotgan summa: {} UZS'.format(sponsor.payment, amount)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -253,31 +205,19 @@ class EditSponsorView(generics.RetrieveUpdateDestroyAPIView):
         return Response(data={"error": "bad request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OTMView(generics.CreateAPIView):
-    queryset = OTM.objects.all()
-    serializer_class = OTMSerializer
+class IHEView(generics.CreateAPIView):
+    queryset = IHE.objects.all()
+    serializer_class = IHESerializer
 
 
-class OTMDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = OTM.objects.all()
-    serializer_class = OTMSerializer
+class IHEDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = IHE.objects.all()
+    serializer_class = IHESerializer
 
 
-class OTMListView(generics.ListAPIView):
-    queryset = OTM.objects.all()
-    serializer_class = OTMSerializer
-
-    def get(self, request, page):
-
-        otm = OTM.objects.all()
-
-        otms = self.serializer_class(instance=otm, many=True)
-
-        paginator = Paginator(otms.data, 10)
-
-        data = paginator.page(page)
-
-        return Response(data=data.object_list, status=status.HTTP_200_OK)
+class IHEListView(generics.ListAPIView):
+    queryset = IHE.objects.all()
+    serializer_class = IHESerializer
 
 
 class Dashboard(APIView):

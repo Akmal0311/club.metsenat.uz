@@ -14,9 +14,9 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OTMSerializer(serializers.ModelSerializer):
+class IHESerializer(serializers.ModelSerializer):
     class Meta:
-        model = OTM
+        model = IHE
         fields = '__all__'
 
 

@@ -4,10 +4,10 @@ from django.db import models
 class Sponsor(models.Model):
 
     STATUS = (
-        ('Yangi', 'Yangi'),
-        ('Moderatsiyada', 'Moderatsiyada'),
-        ('Tastiqlangan', 'Tastiqlangan'),
-        ('Bekor qilingan', 'Bekor qilingan')
+        ('NEW', 'new'),
+        ('MODERATION', 'moderation'),
+        ('CONFIRMED', 'confirmed'),
+        ('CANCELED', 'canceled')
     )
 
     fish = models.CharField(max_length=111, blank=False)
@@ -18,7 +18,7 @@ class Sponsor(models.Model):
 
     spent_amount = models.IntegerField(default=0, blank=True)
     date = models.DateField(auto_now_add=True, blank=True)
-    statuss = models.CharField(max_length=33, choices=STATUS, default='Yangi')
+    status = models.CharField(max_length=33, choices=STATUS, default='NEW')
 
     def __str__(self):
         return self.fish
@@ -27,14 +27,14 @@ class Sponsor(models.Model):
 class Student(models.Model):
 
     STUDENT_TYPE = (
-        ('Bakalavr', 'Bakalavr'),
-        ('Magistr', 'Magister'),
-        ('Doktorant', 'Doktorant')
+        ('BACHELOR', 'bachelor'),
+        ('MASTER', 'master'),
+        ('PhD', 'phd')
     )
 
     fish = models.CharField(max_length=111, blank=False)
     phone_number = models.CharField(max_length=17, blank=False)
-    otm = models.ForeignKey('OTM', on_delete=models.CASCADE)
+    ihe = models.ForeignKey('IHE', on_delete=models.CASCADE)
     student_type = models.CharField(max_length=10, choices=STUDENT_TYPE, default=STUDENT_TYPE[0][0])
     contract_amount = models.IntegerField()
     date = models.DateField(auto_now_add=True, blank=True)
@@ -45,7 +45,7 @@ class Student(models.Model):
         return self.fish
 
 
-class OTM(models.Model):
+class IHE(models.Model):
 
     name = models.CharField(max_length=333, blank=False)
 
