@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .serializer import *
+from . import serializer, models
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
@@ -7,42 +7,42 @@ from django.db.models import Count
 
 
 class SponsorView(generics.CreateAPIView):
-    queryset = Sponsor.objects.all()
-    serializer_class = SponsorSerializer
+    queryset = models.Sponsor.objects.all()
+    serializer_class = serializer.SponsorSerializer
 
 
 class SponsorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sponsor.objects.all()
-    serializer_class = SponsorSerializer
+    queryset = models.Sponsor.objects.all()
+    serializer_class = serializer.SponsorSerializer
 
 
 class SponsorListView(generics.ListAPIView):
-    queryset = Sponsor.objects.all()
-    serializer_class = SponsorSerializer
+    queryset = models.Sponsor.objects.all()
+    serializer_class = serializer.SponsorSerializer
 
 
 class StudentView(generics.CreateAPIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
+    queryset = models.Student.objects.all()
+    serializer_class = serializer.StudentSerializer
 
 
 class StudentListView(generics.ListAPIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
+    queryset = models.Student.objects.all()
+    serializer_class = serializer.StudentSerializer
 
 
 class StudentDetailView(APIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    ss_serializer_class = SponsorPayForStudentSerializer
-    sponsor_serializer = SponsorSerializer
+    queryset = models.Student.objects.all()
+    serializer_class = serializer.StudentSerializer
+    ss_serializer_class = serializer.SponsorPayForStudentSerializer
+    sponsor_serializer = serializer.SponsorSerializer
 
     def get(self, request, student_id):
 
-        student = get_object_or_404(Student, pk=student_id)
+        student = get_object_or_404(models.Student, pk=student_id)
         student_serializer = self.serializer_class(instance=student)
 
-        s = SponsorPayForStudent.objects.all()
+        s = models.SponsorPayForStudent.objects.all()
         ss_serializer = self.ss_serializer_class(instance=s,  many=True)
 
         student_sponsor = list()
@@ -51,7 +51,7 @@ class StudentDetailView(APIView):
             a = ss_serializer.data[i]
 
             if int(a['student']) == student_id:
-                res = Sponsor.objects.get(id=a['sponsor'])
+                res = models.Sponsor.objects.get(id=a['sponsor'])
                 data = {
                     'id': res.id,
                     'fish': res.fish,
@@ -67,7 +67,7 @@ class StudentDetailView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def delete(self, request, student_id):
-        students = Student.objects.all()
+        students = models.Student.objects.all()
         for i in range(len(students)):
             student = students[i]
 
@@ -81,7 +81,7 @@ class StudentDetailView(APIView):
 
         print(data)
 
-        student = Student.objects.get(id=student_id)
+        student = models.Student.objects.get(id=student_id)
         student.fish = data['fish']
         student.phone_number = data['phone_number']
         student.student_type = data['student_type']
@@ -94,20 +94,20 @@ class StudentDetailView(APIView):
 
 
 class SponsorPayForStudentView(generics.CreateAPIView):
-    queryset = SponsorPayForStudent.objects.all()
-    serializer_class = SponsorPayForStudentSerializer
+    queryset = models.SponsorPayForStudent.objects.all()
+    serializer_class = serializer.SponsorPayForStudentSerializer
 
     def post(self, request, student_id, *args, **kwargs):
         data = request.data
         amount = data['amount']
 
-        sponsors = Sponsor.objects.all()
-        students = Student.objects.all()
-        sponsor_pay_for_student = SponsorPayForStudent.objects.all()
+        sponsors = models.Sponsor.objects.all()
+        students = models.Student.objects.all()
+        sponsor_pay_for_student = models.SponsorPayForStudent.objects.all()
         sponsor_bool = True
         student_bool = True
-        sponsor = Sponsor
-        student = Student
+        sponsor = models.Sponsor
+        student = models.Student
         for i in range(len(sponsors)):
             a = sponsors[i]
             if a.id == data['sponsor']:
@@ -146,7 +146,7 @@ class SponsorPayForStudentView(generics.CreateAPIView):
         sponsor.save()
         student.save()
 
-        SponsorPayForStudent.objects.create(
+        models.SponsorPayForStudent.objects.create(
             sponsor=sponsor,
             student=student,
             amount=amount
@@ -156,21 +156,21 @@ class SponsorPayForStudentView(generics.CreateAPIView):
 
 
 class EditSponsorView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SponsorPayForStudent.objects.all()
-    serializer_class = SponsorPayForStudentSerializer
+    queryset = models.SponsorPayForStudent.objects.all()
+    serializer_class = serializer.SponsorPayForStudentSerializer
 
     def put(self, request, *args, **kwargs):
         data = request.data
 
-        sp = SponsorPayForStudent.objects.all()
+        sp = models.SponsorPayForStudent.objects.all()
 
         for i in range(len(sp)):
             a = sp[i]
 
             if a.sponsor.id == data['sponsor'] and a.student.id == data['student']:
-                old_sp = SponsorPayForStudent.objects.get(id=a.id)
-                student = Student.objects.get(id=a.student.id)
-                sponsor = Sponsor.objects.get(id=a.sponsor.id)
+                old_sp = models.SponsorPayForStudent.objects.get(id=a.id)
+                student = models.Student.objects.get(id=a.student.id)
+                sponsor = models.Sponsor.objects.get(id=a.sponsor.id)
 
                 if old_sp.amount <= data['amount']:
                     if student.allocated_amount >= student.contract_amount:
@@ -205,26 +205,26 @@ class EditSponsorView(generics.RetrieveUpdateDestroyAPIView):
         return Response(data={"error": "bad request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class IHEView(generics.CreateAPIView):
-    queryset = IHE.objects.all()
-    serializer_class = IHESerializer
+class OTMView(generics.CreateAPIView):
+    queryset = models.OTM.objects.all()
+    serializer_class = serializer.OTMSerializer
 
 
-class IHEDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = IHE.objects.all()
-    serializer_class = IHESerializer
+class OTMDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.OTM.objects.all()
+    serializer_class = serializer.OTMSerializer
 
 
-class IHEListView(generics.ListAPIView):
-    queryset = IHE.objects.all()
-    serializer_class = IHESerializer
+class OTMListView(generics.ListAPIView):
+    queryset = models.OTM.objects.all()
+    serializer_class = serializer.OTMSerializer
 
 
 class Dashboard(APIView):
 
     def get(self, request):
 
-        students = Student.objects.all()
+        students = models.Student.objects.all()
         total_paid_amount, total_required_amount = 0, 0
 
         for i in range(len(students)):
@@ -232,8 +232,8 @@ class Dashboard(APIView):
             total_paid_amount += student.allocated_amount
             total_required_amount += student.contract_amount
 
-        total_student = Student.objects.all().aggregate(id=Count('id'))['id']
-        total_sponsor = Sponsor.objects.all().aggregate(id=Count('id'))['id']
+        total_student = models.Student.objects.all().aggregate(id=Count('id'))['id']
+        total_sponsor = models.Sponsor.objects.all().aggregate(id=Count('id'))['id']
 
         return Response(data={"Jami to'langan summa": total_paid_amount,
                         "Jami so'ralgan summa": total_required_amount,

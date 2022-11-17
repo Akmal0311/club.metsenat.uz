@@ -1,7 +1,11 @@
 from django.contrib import admin
-from .models import *
+from . import models
 
-admin.site.register(Student)
-admin.site.register(Sponsor)
-admin.site.register(IHE)
-admin.site.register(SponsorPayForStudent)
+admin.site.register(models.Sponsor)
+admin.site.register(models.Student)
+admin.site.register(models.OTM)
+admin.site.register(models.SponsorPayForStudent)
+
+# @admin.register(models.Sponsor)
+# class SponsorAdmin(admin.ModelAdmin):
+#     list_display = ("id", "fish", "")

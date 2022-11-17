@@ -1,30 +1,26 @@
 from rest_framework import serializers
-from .models import *
+from . import models
 
 
 class SponsorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Sponsor
+        model = models.Sponsor
         fields = '__all__'
 
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Student
+        model = models.Student
         fields = '__all__'
 
 
-class IHESerializer(serializers.ModelSerializer):
+class OTMSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IHE
+        model = models.OTM
         fields = '__all__'
 
 
 class SponsorPayForStudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SponsorPayForStudent
+        model = models.SponsorPayForStudent
         fields = '__all__'
-
-
-
-
