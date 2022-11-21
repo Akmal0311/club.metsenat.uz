@@ -129,7 +129,6 @@ class SponsorPayForStudentView(generics.CreateAPIView):
             a = sponsor_pay_for_student[i]
             if a.student.id == student_id and a.sponsor.id == data['sponsor']:
                 return Response(data={'error': 'Sponsor bu talabaga oldin pul otkazgan. eltimos sponsor tahrirlash dan summani qo`shing'})
-
         if sponsor.payment < amount:
             return Response(data={'error': 'Sponsor hisobida yetarli pul mavjud emas!   Sponsor hisobi: {} UZS   To`lanayotgan summa: {} UZS'.format(sponsor.payment, amount)}, status=status.HTTP_400_BAD_REQUEST)
 

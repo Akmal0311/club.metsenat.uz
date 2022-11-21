@@ -24,7 +24,7 @@ class Sponsor(BaseModel):
     payment = models.IntegerField(verbose_name="Homiylik summasi")
     juridical = models.BooleanField(default=False, verbose_name="Yuridik")
     organization = models.CharField(max_length=333, blank=True, verbose_name="Tashkilot nomi")
-    spent_amount = models.IntegerField(default=0, blank=True, verbose_name="Sarflangan summasi")
+    spent_amount = models.IntegerField(default=0, null=True, blank=True, verbose_name="Sarflangan summasi")
     status = models.CharField(max_length=33, choices=STATUS, default='NEW', verbose_name="Holati")
 
     def __str__(self):
@@ -60,7 +60,7 @@ class Student(BaseModel):
 
 class OTM(BaseModel):
 
-    name = models.CharField(max_length=333, blank=False, verbose_name="Nomi")
+    name = models.CharField(max_length=333, blank=False, verbose_name="OTM nomi")
 
     def __str__(self):
         return self.name
@@ -77,7 +77,7 @@ class SponsorPayForStudent(BaseModel):
     amount = models.IntegerField(verbose_name="Summa")
 
     def __str__(self):
-        return "sponsor: {}, student: {}, amount: {}".format(self.sponsor, self.student, self.amount)
+        return str(self.sponsor)
 
     class Meta:
         verbose_name = "Homiy summasi talaba uchun "
